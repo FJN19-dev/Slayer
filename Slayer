@@ -377,4 +377,60 @@ local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/FJN
                 loadstring(game:HttpGet('https://zaphub.xyz/Exec'))()
               end    
         })
+        local Tab = Window:MakeTab({
+            Name = "Doors",
+            Icon = "rbxassetid://134864875487083",
+            PremiumOnly = false
+        })
+        Tab:AddButton({
+            Name = "FFj Hub(Tem key)",
+            Callback = function()
+                loadstring(game:HttpGet('https://rawscripts.net/raw/DOORS-FFJ-Hub-11365'))()
+              end    
+        })
+        local Tab = Window:MakeTab({
+            Name = "Zoombie attack",
+            Icon = "rbxassetid://134864875487083",
+            PremiumOnly = false
+        })
+        Tab:AddButton({
+            Name = "Unknown-Hub-X",
+            Callback = function()
+                loadstring(game:HttpGet('https://raw.githubusercontent.com/Unknownproooolucky/Unknown-Hub-X-Universal-Games/main/Games/Zombie-Attack'))()
+              end    
+        })
+        local Tab = Window:MakeTab({
+            Name = "Evade",
+            Icon = "rbxassetid://134864875487083",
+            PremiumOnly = false
+        })
+        Tab:AddButton({
+            Name = "Unknown-Hub-X",
+            Callback = function()
+                loadstring(game:HttpGet('https://raw.githubusercontent.com/Unknownproooolucky/Unknown-Hub-X-Universal-Games/main/Games/Evade'))()
+              end    
+        })
+        local Tab = Window:MakeTab({
+            Name = "Muscle legend",
+            Icon = "rbxassetid://134864875487083",
+            PremiumOnly = false
+        })
+        Tab:AddButton({
+            Name = "Speed-Hub-X",
+            Callback = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
+              end    
+        })
+        local Tab = Window:MakeTab({
+            Name = "Anime Reborn",
+            Icon = "rbxassetid://134864875487083",
+            PremiumOnly = false
+        })
+        Tab:AddButton({
+            Name = "Nousigi Hub",
+            Callback = function()
+                loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
+              end    
+        })
+        
 OrionLib:Init()
