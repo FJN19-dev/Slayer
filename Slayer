@@ -1,6 +1,6 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/FJN19-dev/Slayer/refs/heads/main/Source')))()
 
-          local Window = OrionLib:MakeWindow({Name = "Slayer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "SlayerHub", IntroText = "Slayer Hub", IntroIcon = "rbxassetid://97007403462199"})
+          local Window = OrionLib:MakeWindow({Name = "Slayer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "SlayerHub", IntroText = "Slayer Hub", IntroIcon = "rbxassetid://91062721750487"})
           -- Blox Fruits
           local Tab = Window:MakeTab({
               Name = "Blox Fruits",
