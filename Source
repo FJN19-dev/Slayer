@@ -663,7 +663,7 @@ ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.145129248, 0, 0.130653262, 0)
 ImageButton.Size = UDim2.new(0, 44, 0, 44)
-ImageButton.Image = "rbxassetid://97007403462199"
+ImageButton.Image = "rbxassetid://91062721750487"
 
 ImageButton.MouseButton1Down:Connect(function()
 	ImageButton:Destroy()
