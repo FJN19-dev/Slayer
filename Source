@@ -649,10 +649,6 @@ function OrionLib:MakeWindow(WindowConfig)
 		MainWindow.Visible = false
 		UIHidden = true
 		
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
-
 -- Icon personalizado
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
@@ -666,10 +662,11 @@ ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.908554554, 0, 0.0703517571, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Image = "rbxassetid://91062721750487"
+ImageButton.Position = UDim2.new(0.145129248, 0, 0.130653262, 0)
+ImageButton.Size = UDim2.new(0, 44, 0, 44)
+ImageButton.Image = "rbxassetid://97007403462199"
 
+UICorner.CornerRadius = UDim.new(1, 0)
 UICorner.Parent = ImageButton
 
 -- Função para tornar o botão arrastável
@@ -711,15 +708,16 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
+-- Evita que o botão seja ativado se foi arrastado
 ImageButton.MouseButton1Down:Connect(function()
-	ImageButton:Destroy()
-	MainWindow.Visible = true
-	UIHidden = false
-
+    task.wait(0.1) -- Pequeno delay para garantir que houve um clique real
+    if not hasMoved then
+        ImageButton:Destroy()
+        MainWindow.Visible = true
+        UIHidden = false
+    end
 end)
 
-UICorner.CornerRadius = UDim.new(1, 0)
-UICorner.Parent = ImageButton
 
 
 		
