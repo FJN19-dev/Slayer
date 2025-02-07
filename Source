@@ -663,10 +663,9 @@ ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.145129248, 0, 0.130653262, 0)
-ImageButton.Size = UDim2.new(0, 44, 0, 44)
-ImageButton.Image = "rbxassetid://97007403462199"
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
+ImageButton.Image = "rbxassetid://91062721750487"
 
-UICorner.CornerRadius = UDim.new(1, 0)
 UICorner.Parent = ImageButton
 
 -- Função para tornar o botão arrastável
@@ -724,7 +723,7 @@ end)
 		OrionLib:MakeNotification({
 			Name = "Interface Fechada",
 			Content = "Clique no Icon para abrir a interface",
-			Image = "rbxassetid://78162744063373",
+			Image = "rbxassetid://91062721750487",
 			Time = 5
 		})
 		WindowConfig.CloseCallback()
