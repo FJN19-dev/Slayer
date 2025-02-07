@@ -603,6 +603,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		Size = UDim2.new(0, 615, 0, 344),
 		ClipsDescendants = true
 	}), {
+		
 		--SetProps(MakeElement("Image", "rbxassetid://3523728077"), {
 		--	AnchorPoint = Vector2.new(0.5, 0.5),
 		--	Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -652,8 +653,12 @@ local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
 
---Properties:
+-- Icon personalizado
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
 
+-- Propriedades
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -661,9 +666,50 @@ ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.145129248, 0, 0.130653262, 0)
-ImageButton.Size = UDim2.new(0, 44, 0, 44)
+ImageButton.Position = UDim2.new(0.908554554, 0, 0.0703517571, 0)
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
 ImageButton.Image = "rbxassetid://91062721750487"
+
+UICorner.Parent = ImageButton
+
+-- Função para tornar o botão arrastável
+local UIS = game:GetService("UserInputService")
+local dragging, dragInput, startPos, startMousePos
+local hasMoved = false
+
+ImageButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        hasMoved = false
+        startPos = ImageButton.Position
+        startMousePos = UIS:GetMouseLocation()
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+ImageButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = UIS:GetMouseLocation() - startMousePos
+        if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then -- Garante que houve um movimento considerável
+            hasMoved = true
+        end
+        ImageButton.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
 
 ImageButton.MouseButton1Down:Connect(function()
 	ImageButton:Destroy()
