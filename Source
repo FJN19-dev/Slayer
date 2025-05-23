@@ -14,23 +14,15 @@ local OrionLib = {
 	Flags = {},
 	Themes = {
 		Default = {
-			Main = Color3.fromRGB(30, 30, 30),       -- Fundo escuro suave, menos pesado
-			Second = Color3.fromRGB(45, 45, 45),     -- Fundo secundário para painéis
-			Stroke = Color3.fromRGB(75, 75, 75),     -- Contornos e bordas
-			Divider = Color3.fromRGB(70, 70, 70),    -- Linhas divisórias sutis
-			Text = Color3.fromRGB(230, 230, 230),    -- Texto branco suave
-			TextDark = Color3.fromRGB(160, 160, 160) -- Texto cinza para legendas ou menos destaque
-		},
-		Amestrys = {
-			Main = Color3.fromRGB(38, 0, 76),        -- Roxo escuro elegante
-			Second = Color3.fromRGB(93, 30, 145),    -- Lilás escuro
-			Stroke = Color3.fromRGB(134, 75, 192),   -- Roxo vibrante para bordas
-			Divider = Color3.fromRGB(112, 56, 168),  -- Divisor roxo suave
-			Text = Color3.fromRGB(220, 210, 255),    -- Texto lilás claro
-			TextDark = Color3.fromRGB(163, 143, 195) -- Texto lilás médio para menos destaque
+			Main = Color3.fromRGB(153, 102, 204),
+			Second = Color3.fromRGB(255, 182, 193), -- Rosa claro (Light Pink)
+			Stroke = Color3.fromRGB(60, 60, 60),
+			Divider = Color3.fromRGB(60, 60, 60),
+			Text = Color3.fromRGB(240, 240, 240),
+			TextDark = Color3.fromRGB(150, 150, 150)
 		}
 	},
-	SelectedTheme = "Default", -- Você pode trocar para "Amestrys" quando quiser
+	SelectedTheme = "Default",
 	Folder = nil,
 	SaveCfg = false
 }
