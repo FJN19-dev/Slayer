@@ -60,13 +60,13 @@ local function GetRarity(fruitName)
     return "Unknown"
 end
 
--- ======= Tween (mais lento para evitar kick) =======
+-- ======= Tween =======
 local function TweenToFruit(fruit)
     if fruit and fruit:IsDescendantOf(workspace) and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
         local hrp = Player.Character.HumanoidRootPart
         local distance = (hrp.Position - fruit.Position).Magnitude
-        local speed = 50 -- mais lento
-        local tweenTime = math.clamp(distance / speed, 0.5, 10)
+        local speed = 100
+        local tweenTime = math.clamp(distance / speed, 0.1, 5)
         local tween = TweenService:Create(hrp, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {CFrame = fruit.CFrame + Vector3.new(0,5,0)})
         tween:Play()
         tween.Completed:Wait()
@@ -79,6 +79,7 @@ local function SendWebhookEmbed(url, fruitName, eventType)
     pcall(function()
         local rarity = GetRarity(fruitName)
         local mention = ""
+
         if rarity == "Legendary" or rarity == "Mythical" then
             mention = "<@1162529172460154942>"
         end
@@ -96,7 +97,7 @@ local function SendWebhookEmbed(url, fruitName, eventType)
                     {name = "⏰ Time", value = os.date("%Y-%m-%d %H:%M:%S"), inline = true},
                     {name = "🌍 PlaceId", value = tostring(game.PlaceId), inline = true}
                 },
-                thumbnail = {url = "https://cdn.discordapp.com/attachments/1345800682330132540/1414000702786899988/IMG_20250906_183313.jpg"},
+                thumbnail = {url = "https://cdn.discordapp.com/attachments/1345800682330132540/1414000702786899988/IMG_20250906_183313.jpg?ex=68bea306&is=68bd5186&hm=1eb6fd5c67d9e50ed36298193021476c8934c9f29eb56be907dfa032b82c8983&"},
                 footer = {text = "Slayer Hub • Hoje às " .. os.date("%H:%M")}
             }}
         }
@@ -135,23 +136,10 @@ local function AutoStore()
     end)
 end
 
--- ======= Checar frutas lendárias/míticas =======
-local function HasLegendaryOrMythical()
-    for _, obj in pairs(workspace:GetChildren()) do
-        if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(string.lower(obj.Name),"fruit") then
-            local rarity = GetRarity(obj.Name)
-            if rarity == "Legendary" or rarity == "Mythical" then
-                return true
-            end
-        end
-    end
-    return false
-end
-
 -- ======= ServerHop =======
 local function ServerHop()
-    local req = syn and syn.request or http_request or request
     local servers = {}
+    local req = syn and syn.request or http_request or request
     local response = req({Url=string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100", game.PlaceId)})
     local data = HttpService:JSONDecode(response.Body)
     for _, v in pairs(data.data) do
@@ -159,35 +147,10 @@ local function ServerHop()
             table.insert(servers, v.id)
         end
     end
-
-    while true do
-        local chosenServer = servers[math.random(1,#servers)]
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, chosenServer, Player)
-        task.wait(5)
-        if HasLegendaryOrMythical() then
-            break
-        end
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1,#servers)], Player)
     end
 end
-
--- ======= AutoEscolher Time =======
-getgenv().TeamConfig = {AutoChooseTeam = true, Team = "Pirates"} -- "Marines" se quiser
-
-local function setTeam(teamName)
-    local args = {"SetTeam", teamName}
-    ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(args))
-end
-
-spawn(function()
-    while wait() do
-        if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
-            if getgenv().TeamConfig.AutoChooseTeam then
-                setTeam(getgenv().TeamConfig.Team)
-            end
-            break
-        end
-    end
-end)
 
 -- ======= Loop Principal =======
 task.spawn(function()
@@ -197,31 +160,23 @@ task.spawn(function()
             local fruitsFound = false
             pcall(function()
                 for _, obj in pairs(workspace:GetChildren()) do
-                    if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(string.lower(obj.Name),"fruit") then
-                        local rarity = GetRarity(obj.Name)
-                        if rarity == "Legendary" or rarity == "Mythical" then
-                            fruitsFound = true
-                            if Config.WebhookSpawnEnabled and not trackedFruits[obj] then
-                                SendWebhookEmbed(Config.WebhookSpawnURL, obj.Name, "🍉 Fruta Spawnou!")
-                                trackedFruits[obj] = true
-                            end
-                            TweenToFruit(obj.Handle)
-                            task.wait(0.5)
-                            firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,0)
-                            firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,1)
-                            task.wait(1)
-                            if Config.AutoStoreFruits then AutoStore() end
+                    if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(obj.Name,"Fruit") then
+                        fruitsFound = true
+                        if Config.WebhookSpawnEnabled and not trackedFruits[obj] then
+                            SendWebhookEmbed(Config.WebhookSpawnURL, obj.Name, "🍉 Fruta Spawnou!")
+                            trackedFruits[obj] = true
                         end
+                        TweenToFruit(obj.Handle)
+                        task.wait(0.5)
+                        firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,0)
+                        firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,1)
+                        task.wait(1)
+                        if Config.AutoStoreFruits then AutoStore() end
                     end
                 end
             end)
-
-            -- Só ServerHop se não encontrar nenhuma fruta lendária/mítica
             if not fruitsFound then
-                task.wait(15) -- espera antes de trocar de servidor
-                if not HasLegendaryOrMythical() then
-                    ServerHop()
-                end
+                ServerHop()
             end
         end
     end
@@ -307,9 +262,10 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.908,0,0.07,0)
-ImageButton.Size = UDim2.new(0,45,0,45)
+ImageButton.Position = UDim2.new(0.02, 0, 0.07, 0)
+ImageButton.Size = UDim2.new(0, 45, 0, 45)
 ImageButton.Image = "rbxassetid://91062721750487"
+
 UICorner.Parent = ImageButton
 
 ImageButton.MouseButton1Down:Connect(function()
