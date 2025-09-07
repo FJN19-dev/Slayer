@@ -60,13 +60,13 @@ local function GetRarity(fruitName)
     return "Unknown"
 end
 
--- ======= Tween =======
+-- ======= Tween (mais lento para evitar kick) =======
 local function TweenToFruit(fruit)
     if fruit and fruit:IsDescendantOf(workspace) and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
         local hrp = Player.Character.HumanoidRootPart
         local distance = (hrp.Position - fruit.Position).Magnitude
-        local speed = 150
-        local tweenTime = math.clamp(distance / speed, 0.1, 5)
+        local speed = 50 -- mais lento
+        local tweenTime = math.clamp(distance / speed, 0.5, 10)
         local tween = TweenService:Create(hrp, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {CFrame = fruit.CFrame + Vector3.new(0,5,0)})
         tween:Play()
         tween.Completed:Wait()
@@ -159,7 +159,6 @@ local function ServerHop()
         end
     end
 
-    -- Loop até encontrar um servidor com fruta mítica ou lendária
     while true do
         local chosenServer = servers[math.random(1,#servers)]
         TeleportService:TeleportToPlaceInstance(game.PlaceId, chosenServer, Player)
@@ -170,6 +169,26 @@ local function ServerHop()
     end
 end
 
+-- ======= AutoEscolher Time =======
+getgenv().TeamConfig = {AutoChooseTeam = true, Team = "Pirates"} -- pode mudar para "Marines"
+
+local function setTeam(teamName)
+    local args = {"SetTeam", teamName}
+    ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(args))
+end
+
+spawn(function()
+    while wait() do
+        local repStorage = ReplicatedStorage
+        if repStorage:FindFirstChild("Remotes") and repStorage.Remotes:FindFirstChild("CommF_") then
+            if getgenv().TeamConfig.AutoChooseTeam then
+                setTeam(getgenv().TeamConfig.Team)
+            end
+            break
+        end
+    end
+end)
+
 -- ======= Loop Principal =======
 task.spawn(function()
     local trackedFruits = {}
@@ -179,17 +198,20 @@ task.spawn(function()
             pcall(function()
                 for _, obj in pairs(workspace:GetChildren()) do
                     if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(obj.Name,"Fruit") then
-                        fruitsFound = true
-                        if Config.WebhookSpawnEnabled and not trackedFruits[obj] then
-                            SendWebhookEmbed(Config.WebhookSpawnURL, obj.Name, "🍉 Fruta Spawnou!")
-                            trackedFruits[obj] = true
+                        local rarity = GetRarity(obj.Name)
+                        if rarity == "Legendary" or rarity == "Mythical" then
+                            fruitsFound = true
+                            if Config.WebhookSpawnEnabled and not trackedFruits[obj] then
+                                SendWebhookEmbed(Config.WebhookSpawnURL, obj.Name, "🍉 Fruta Spawnou!")
+                                trackedFruits[obj] = true
+                            end
+                            TweenToFruit(obj.Handle)
+                            task.wait(0.5)
+                            firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,0)
+                            firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,1)
+                            task.wait(1)
+                            if Config.AutoStoreFruits then AutoStore() end
                         end
-                        TweenToFruit(obj.Handle)
-                        task.wait(0.5)
-                        firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,0)
-                        firetouchinterest(Player.Character.HumanoidRootPart,obj.Handle,1)
-                        task.wait(1)
-                        if Config.AutoStoreFruits then AutoStore() end
                     end
                 end
             end)
@@ -268,24 +290,27 @@ WebhookTab:AddInput("WebhookStoreURL", {
         SaveConfig()
     end
 })
-
--- ======= Ícone =======
+   
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
 
-ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+--Properties:
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.02, 0, 0.07, 0)
+ImageButton.Position = UDim2.new(0.908554554, 0, 0.0703517571, 0)
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
 ImageButton.Image = "rbxassetid://91062721750487"
 
 UICorner.Parent = ImageButton
 
-ImageButton.MouseButton1Down:Connect(function()
+-- Adicionando a função para pressionar a tecla LeftControl
+ImageButton.MouseButton1Down:connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
