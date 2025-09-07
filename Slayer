@@ -135,10 +135,10 @@ local function AutoStore()
     end)
 end
 
--- ======= ServerHop só com frutas Mítica/Lendária =======
+-- ======= Checar frutas lendárias/míticas =======
 local function HasLegendaryOrMythical()
     for _, obj in pairs(workspace:GetChildren()) do
-        if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(obj.Name,"Fruit") then
+        if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(string.lower(obj.Name),"fruit") then
             local rarity = GetRarity(obj.Name)
             if rarity == "Legendary" or rarity == "Mythical" then
                 return true
@@ -148,9 +148,10 @@ local function HasLegendaryOrMythical()
     return false
 end
 
+-- ======= ServerHop =======
 local function ServerHop()
-    local servers = {}
     local req = syn and syn.request or http_request or request
+    local servers = {}
     local response = req({Url=string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100", game.PlaceId)})
     local data = HttpService:JSONDecode(response.Body)
     for _, v in pairs(data.data) do
@@ -170,7 +171,7 @@ local function ServerHop()
 end
 
 -- ======= AutoEscolher Time =======
-getgenv().TeamConfig = {AutoChooseTeam = true, Team = "Pirates"} -- pode mudar para "Marines"
+getgenv().TeamConfig = {AutoChooseTeam = true, Team = "Pirates"} -- "Marines" se quiser
 
 local function setTeam(teamName)
     local args = {"SetTeam", teamName}
@@ -179,8 +180,7 @@ end
 
 spawn(function()
     while wait() do
-        local repStorage = ReplicatedStorage
-        if repStorage:FindFirstChild("Remotes") and repStorage.Remotes:FindFirstChild("CommF_") then
+        if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
             if getgenv().TeamConfig.AutoChooseTeam then
                 setTeam(getgenv().TeamConfig.Team)
             end
@@ -197,7 +197,7 @@ task.spawn(function()
             local fruitsFound = false
             pcall(function()
                 for _, obj in pairs(workspace:GetChildren()) do
-                    if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(obj.Name,"Fruit") then
+                    if obj:IsA("Tool") and obj:FindFirstChild("Handle") and string.find(string.lower(obj.Name),"fruit") then
                         local rarity = GetRarity(obj.Name)
                         if rarity == "Legendary" or rarity == "Mythical" then
                             fruitsFound = true
@@ -215,8 +215,13 @@ task.spawn(function()
                     end
                 end
             end)
+
+            -- Só ServerHop se não encontrar nenhuma fruta lendária/mítica
             if not fruitsFound then
-                ServerHop()
+                task.wait(15) -- espera antes de trocar de servidor
+                if not HasLegendaryOrMythical() then
+                    ServerHop()
+                end
             end
         end
     end
@@ -290,27 +295,23 @@ WebhookTab:AddInput("WebhookStoreURL", {
         SaveConfig()
     end
 })
-   
+
+-- ======= Ícone =======
 local ScreenGui = Instance.new("ScreenGui")
 local ImageButton = Instance.new("ImageButton")
 local UICorner = Instance.new("UICorner")
 
---Properties:
-
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 ImageButton.Parent = ScreenGui
 ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.908554554, 0, 0.0703517571, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45)
+ImageButton.Position = UDim2.new(0.908,0,0.07,0)
+ImageButton.Size = UDim2.new(0,45,0,45)
 ImageButton.Image = "rbxassetid://91062721750487"
-
 UICorner.Parent = ImageButton
 
--- Adicionando a função para pressionar a tecla LeftControl
-ImageButton.MouseButton1Down:connect(function()
+ImageButton.MouseButton1Down:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
 end)
